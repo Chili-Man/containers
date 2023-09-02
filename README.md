@@ -4,7 +4,7 @@
 Containers used for home automation purposes.
 
 ## Usage
-Each subdirectory corresponds to a Dockerfile built for a specific purpose
+Each subdirectory corresponds to a Dockerfile built for a specific purpose:
 
 
 - [certificate-manager](./certificate-manager):
