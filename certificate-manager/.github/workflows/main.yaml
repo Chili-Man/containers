@@ -41,7 +41,7 @@ jobs:
 
   # Build the container images
   build-certificate-manager:
-    name: Linter
+    name: Build Certificate Manager
     runs-on: ubuntu-22.04
 
     steps:
