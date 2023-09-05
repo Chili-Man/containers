@@ -1,0 +1,26 @@
+# Pull in ofelia binary from container image because they didn't create
+# binaries for the latest release (0.3.7)
+FROM mcuadros/ofelia:39bca16 as ofelia
+
+# The container image we'll build to use as is
+FROM alpine:3.18
+
+COPY --from=ofelia /usr/bin/ofelia /usr/bin/ofelia
+
+# We update the CA certificates, add the time zone data for ofelia, and ssh for
+# copying over the TLS certificates to the servers
+RUN apk update && \
+  apk --no-cache add ca-certificates tzdata openssh && \
+  update-ca-certificates && \
+  rm -rf /var/cache/apk/*
+
+# Download Lego for ACME TLS certificates
+RUN set -eux; \
+  version='4.14.0'; \
+  arch=$(uname -a); \
+  lego_arch='amd64'; \
+  if [ "${arch}" = 'aarch64' ]; then lego_arch='arm64'; fi \
+  wget -O lego_checksums.txt "https://github.com/go-acme/lego/releases/download/v${version}/lego_${version}_checksums.txt"; \
+  wget -O lego.tar.gz "https://github.com/go-acme/lego/releases/download/v${version}/lego_v${version}_linux_${lego_arch}.tar.gz"; \
+  grep "linux_${lego_arch}\.tar\.gz" 'lego_checksums.txt'  | sha256sum -c - ; \
+  
