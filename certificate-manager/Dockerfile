@@ -9,6 +9,7 @@ COPY --from=ofelia /usr/bin/ofelia /usr/bin/ofelia
 
 # We update the CA certificates, add the time zone data for ofelia, and ssh for
 # copying over the TLS certificates to the servers
+# hadolint disable=
 RUN apk update && \
   apk --no-cache add ca-certificates tzdata openssh && \
   update-ca-certificates && \
@@ -21,8 +22,8 @@ RUN set -eux; \
   lego_arch='amd64'; \
   temp_dir=$(mktemp -d) && cd "${temp_dir}"; \
   if [ "${arch}" = 'aarch64' ]; then lego_arch='arm64'; fi; \
-  wget -O lego_checksums.txt "https://github.com/go-acme/lego/releases/download/v${version}/lego_${version}_checksums.txt"; \
-  wget "https://github.com/go-acme/lego/releases/download/v${version}/lego_v${version}_linux_${lego_arch}.tar.gz"; \
+  wget -q -O lego_checksums.txt "https://github.com/go-acme/lego/releases/download/v${version}/lego_${version}_checksums.txt"; \
+  wget -q "https://github.com/go-acme/lego/releases/download/v${version}/lego_v${version}_linux_${lego_arch}.tar.gz"; \
   grep "linux_${lego_arch}\.tar\.gz" 'lego_checksums.txt'  | sha256sum -c - ; \
   tar -x -f "lego_v${version}_linux_${lego_arch}.tar.gz"; \
   cp lego /usr/bin/lego; \
