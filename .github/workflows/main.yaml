@@ -21,7 +21,6 @@ jobs:
       packages: read
       statuses: write
 
-
     steps:
       - name: Git Code Checkout
         uses: actions/checkout@v3
@@ -66,17 +65,22 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker metadata
-        id: meta
+        id: docker-meta
         uses: docker/metadata-action@v4
         with:
           images: habanero/certificate-manager
 
+      # IDEA:
+      # https://docs.docker.com/build/ci/github-actions/test-before-push/
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: certificate-manager/
           platforms: linux/amd64,linux/arm64
+          provenance: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: ${{ github.event_name != 'pull_request' }}
-          tags: user/app:latest
+          tags: ${{ steps.docker-meta.outputs.tags }}
+          labels: ${{ steps.docker-meta.outputs.labels }}
