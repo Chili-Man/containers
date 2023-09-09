@@ -19,8 +19,11 @@ RUN set -eux; \
   version='4.14.0'; \
   arch=$(uname -a); \
   lego_arch='amd64'; \
-  if [ "${arch}" = 'aarch64' ]; then lego_arch='arm64'; fi \
+  temp_dir=$(mktemp -d) && cd "${temp_dir}"; \
+  if [ "${arch}" = 'aarch64' ]; then lego_arch='arm64'; fi; \
   wget -O lego_checksums.txt "https://github.com/go-acme/lego/releases/download/v${version}/lego_${version}_checksums.txt"; \
-  wget -O lego.tar.gz "https://github.com/go-acme/lego/releases/download/v${version}/lego_v${version}_linux_${lego_arch}.tar.gz"; \
+  wget "https://github.com/go-acme/lego/releases/download/v${version}/lego_v${version}_linux_${lego_arch}.tar.gz"; \
   grep "linux_${lego_arch}\.tar\.gz" 'lego_checksums.txt'  | sha256sum -c - ; \
-  
+  tar -x -f "lego_v${version}_linux_${lego_arch}.tar.gz"; \
+  cp lego /usr/bin/lego; \
+  lego --version
