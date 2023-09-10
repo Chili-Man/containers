@@ -7,19 +7,19 @@ FROM alpine:3.18
 
 COPY --from=ofelia /usr/bin/ofelia /usr/bin/ofelia
 
-SHELL ["/bin/ash", "-c"]
+SHELL ["/bin/ash", "-o", "pipefail", "-e", "-u", "-x", "-c"]
 
 # We update the CA certificates, add the time zone data for ofelia, and ssh for
 # copying over the TLS certificates to the servers
-# hadolint disable=DL3018
+# hadolint ignore=DL3018
 RUN apk update && \
   apk --no-cache add ca-certificates tzdata openssh && \
   update-ca-certificates && \
   rm -rf /var/cache/apk/*
 
 # Download Lego for ACME TLS certificates
-RUN set -eux; \
-  version='4.14.0'; \
+# hadolint ignore=DL3003
+RUN version='4.14.0'; \
   arch=$(uname -a); \
   lego_arch='amd64'; \
   temp_dir=$(mktemp -d) && cd "${temp_dir}"; \
