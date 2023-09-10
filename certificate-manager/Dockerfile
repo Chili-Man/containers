@@ -7,9 +7,11 @@ FROM alpine:3.18
 
 COPY --from=ofelia /usr/bin/ofelia /usr/bin/ofelia
 
+SHELL ["/bin/ash", "-c"]
+
 # We update the CA certificates, add the time zone data for ofelia, and ssh for
 # copying over the TLS certificates to the servers
-# hadolint disable=
+# hadolint disable=DL3018
 RUN apk update && \
   apk --no-cache add ca-certificates tzdata openssh && \
   update-ca-certificates && \
@@ -26,5 +28,6 @@ RUN set -eux; \
   wget -q "https://github.com/go-acme/lego/releases/download/v${version}/lego_v${version}_linux_${lego_arch}.tar.gz"; \
   grep "linux_${lego_arch}\.tar\.gz" 'lego_checksums.txt'  | sha256sum -c - ; \
   tar -x -f "lego_v${version}_linux_${lego_arch}.tar.gz"; \
-  cp lego /usr/bin/lego; \
-  lego --version
+  mv lego /usr/bin/lego; \
+  lego --version; \
+  rm -rf "${temp_dir}"
