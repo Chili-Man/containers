@@ -22,7 +22,7 @@ RUN apk update && \
 RUN version='4.14.0'; \
   arch=$(uname -a); \
   lego_arch='amd64'; \
-  temp_dir=$(mktemp -d) && cd "${temp_dir}"; \
+  temp_dir=$(mktemp -d) && cd "${temp_dir}" || exit 1; \
   if [ "${arch}" = 'aarch64' ]; then lego_arch='arm64'; fi; \
   wget -q -O lego_checksums.txt "https://github.com/go-acme/lego/releases/download/v${version}/lego_${version}_checksums.txt"; \
   wget -q "https://github.com/go-acme/lego/releases/download/v${version}/lego_v${version}_linux_${lego_arch}.tar.gz"; \
